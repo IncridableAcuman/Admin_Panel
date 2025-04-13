@@ -7,6 +7,7 @@ import LineCharts from '../../resources/LineCharts'
 import Quantity from '../../resources/Quantity'
 import Compaign from '../../resources/Compaign'
 import { ThemeContext } from '../../contexts/ThemeProvider'
+import GeoChart from '../../resources/GeoChart'
 const Home = () => {
   const [sidebarIsOpen,setIsSidebarOpen]=useState(false);
   const {theme}=useContext(ThemeContext);
@@ -56,7 +57,7 @@ const Home = () => {
           <div className={`${theme==="light"?"bg-gray-900 text-white":"bg-white text-gray-900"} grid grid-cols-1 lg:grid-cols-3 gap-6 lg:ml-64 normalize`}>
             <Compaign/>
             <Quantity/>
-            <Compaign/>
+            <GeoChart/>
           </div>
     </div>
 
