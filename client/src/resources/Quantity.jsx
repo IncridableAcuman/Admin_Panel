@@ -1,12 +1,14 @@
 import { Webhook } from 'lucide-react'
-import React from 'react'
+import React, { useContext } from 'react'
 import { Area, Bar, CartesianGrid, ComposedChart, Legend, Line, Tooltip, XAxis, YAxis } from 'recharts'
 import data from './ChartData'
+import { ThemeContext } from '../contexts/ThemeProvider'
 const Quantity = () => {
+  const {theme}=useContext(ThemeContext);
   return (
     <>
-    <div className="border border-gray-300   text-center space-y-2 rounded">
-        <div className="flex items-center justify-between p-2">
+    <div className={` ${theme==="light"?"bg-gray-900 text-white":"bg-white text-gray-900"} border border-gray-300   text-center space-y-2 rounded`}>
+        <div className="flex items-center justify-between p-2 ">
             <h2>Sales Quantity</h2>
             <Webhook/>
         </div>

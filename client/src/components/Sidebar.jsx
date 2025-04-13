@@ -14,8 +14,10 @@ import {
     UserSquare,
     X,
   } from "lucide-react";  
+import { useContext } from "react";
+import { ThemeContext } from "../contexts/ThemeProvider";
   const Sidebar = ({isOpen,setIsOpen}) => {
-  
+  const {theme}=useContext(ThemeContext);
     const SidebarData = [
       { name: "Manage Team", icon: <Users size={20} />, path: "#" },
       { name: "Contact Information", icon: <UserSquare size={20} />, path: "#" },
@@ -48,7 +50,7 @@ import {
   
           {/* Sidebar */}
           <div
-            className={`w-64 fixed top-0 right-0 bg-gray-900 text-white border-l-2 border-gray-500 min-h-screen z-50 
+            className={`w-64 fixed top-0 right-0 ${theme==="light"? "bg-gray-900 text-white":"bg-white text-gray-900"}  border-l-2 border-gray-500 min-h-screen z-50 
             transform transition-transform duration-300 ease-in-out
             ${isOpen ? "translate-x-0" : "translate-x-full"}
             lg:left-0 lg:right-auto lg:translate-x-0 lg:border-r-2 lg:border-l-0`}
@@ -58,7 +60,7 @@ import {
               <Code2 className="cursor-pointer text-gray-300 hover:text-white transition hidden lg:block" />
               {isOpen && (
                 <button
-                  className="lg:hidden text-gray-300 cursor-pointer hover:text-white"
+                  className={`lg:hidden ${theme==="light"? "text-gray-300 hover:text-white transition":"text-gray-700 hover:text-gray-900 transition"}  cursor-pointer `}
                   onClick={() => setIsOpen(false)}
                 >
                   <X />
