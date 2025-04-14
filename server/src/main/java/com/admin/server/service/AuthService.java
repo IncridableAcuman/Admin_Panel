@@ -25,8 +25,8 @@ public class AuthService {
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
-    private static final long accessTime=604800000;
-    private static final long refreshTime=900000;
+    private static final long accessTime=900000;
+    private static final long refreshTime=604800000;
 
     public AuthResponse userSignUp(AuthRequest request,HttpServletResponse response){
 
@@ -62,19 +62,21 @@ public class AuthService {
  
     // user login
     public AuthResponse userSignIn(LoginRequest request,HttpServletResponse response){
-     User user=authRepository.findByEmail(request.getEmail()).orElseThrow(()->new RuntimeException("User not found"));
+
+     User user=authRepository.findByEmail(request.getEmail())
+     .orElseThrow(()->new RuntimeException("User not found"));// userni mavjudligini tekshiramiz
      if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
         throw new RuntimeException("Invalid password!");
      }
      String accessToken=jwtUtil.generateToken(user, accessTime);
      Token token=refreshTokenRepository.findByUser(user)
-     .orElseGet(()->{
+     .orElseGet(()->{// tokenni generatsiya qilamiz
         Token tokenData=new Token();
         tokenData.setUser(user);
         tokenData.setRefreshToken(jwtUtil.generateToken(user, refreshTime));
         tokenData.setExpiryDate(new Date(System.currentTimeMillis()+refreshTime));
         return refreshTokenRepository.save(tokenData);
-     });
+     });//cookiega saqlaymiz
      ResponseCookie responseCookie=ResponseCookie.from("refreshToken", token.getRefreshToken())
         .httpOnly(true)
         .secure(false)
@@ -83,5 +85,51 @@ public class AuthService {
         .build();
         response.addHeader("Set-Cookie", responseCookie.toString());
         return new AuthResponse(user.getId(), user.getUsername(), user.getEmail(), accessToken, token.getRefreshToken());
+    }
+
+    // refresh regenerating token
+    public AuthResponse refresh(String token,HttpServletResponse response){
+        if(token==null || token.isEmpty()){
+            throw new RuntimeException("Token is missing");
+        }
+        //token mavjudligi
+        if(!jwtUtil.validateToken(token)){
+            throw new RuntimeException("Invalid token");
+        }
+        String email;
+        try {// tokendan emailni ajratib userni haqiqiy 
+            email=jwtUtil.extractEmail(token);//ekanligini
+        } catch (Exception e) {//tekshirish
+            throw new RuntimeException("Could not extract email from token");
+        }
+        User user=authRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
+
+        Token savedToken=refreshTokenRepository.findByUser(user)
+        .orElseThrow(()->new RuntimeException("Token not found"));
+
+        if(!savedToken.getRefreshToken().equals(token)){//token qiymatlari tengligini tekshirish
+            throw new RuntimeException("Token mismatch!");
+        }
+        if(savedToken.getExpiryDate().before(new java.util.Date())){
+            throw new RuntimeException("Token expired");// muddatini solishtirish
+        }
+        String newAccessToken=jwtUtil.generateToken(user, accessTime);
+        String newRefreshToken=jwtUtil.generateToken(user, refreshTime);
+        savedToken.setRefreshToken(newRefreshToken);
+        refreshTokenRepository.save(savedToken);
+
+        ResponseCookie responseCookie=ResponseCookie.from("refreshToken", newRefreshToken)
+            .httpOnly(true)
+            .secure(false)
+            .path("/")
+            .maxAge(refreshTime)
+            .build();
+        response.addHeader("Set-Cookie", responseCookie.toString());
+        return new AuthResponse(user.getId(), user.getUsername(), user.getEmail(), newAccessToken, newRefreshToken);
+    }
+    // user  logout
+    public void userSignOut(String token){
+        Token token2=refreshTokenRepository.findByToken(token).orElseThrow(()->new RuntimeException("Invalid token"));
+        refreshTokenRepository.delete(token2);
     }
 }
