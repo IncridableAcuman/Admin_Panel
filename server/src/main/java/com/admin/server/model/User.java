@@ -2,7 +2,7 @@ package com.admin.server.model;
 
 import java.io.Serializable;
 
-import javax.management.relation.Role;
+import com.admin.server.Enums.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -21,6 +21,7 @@ const Home = () => {
     <div className={`${theme==="light"?"bg-gray-900 text-white": "bg-white text-gray-900"} h-screen`}>
           <Navbar onMenuClick={()=>setIsSidebarOpen(true)}/>
           <Sidebar isOpen={sidebarIsOpen} setIsOpen={setIsSidebarOpen}/>
+          
           <div className=" flex flex-col md:flex-row md:ml-64 mt-16 px-8 py-4  items-center justify-between">
             <div className="flex items-center gap-3 border-2 mb-4 border-gray-700 p-3 ">
               <input type="text" placeholder='Search' className={`outline-none ${theme==="light"? "bg-gray-900 text-white":"bg-white text-gray-900"} `} />

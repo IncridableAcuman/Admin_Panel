@@ -1,3 +1,5 @@
+package com.admin.server.util;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
@@ -70,3 +72,4 @@ public class JWTUtil {
             .getSubject();
         }
 }
+
