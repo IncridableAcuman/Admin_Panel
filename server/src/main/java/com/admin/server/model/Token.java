@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +29,7 @@ public class Token {
     @Column(nullable = false,unique = true)
     private String refreshToken;
 
-    @OneToOne//user bilan bog'langan id orqali bu yerda faqat userni id qismi saqlandi
+    @ManyToOne
     @JoinColumn(name = "user_id",referencedColumnName = "id")//o'sha ustunga qo'shilib olish
     private User user;
 

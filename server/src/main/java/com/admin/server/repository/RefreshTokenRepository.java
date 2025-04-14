@@ -9,6 +9,6 @@ import com.admin.server.model.User;
 
 public interface RefreshTokenRepository extends JpaRepository<Token,Long> {
     Optional<Token> findByUser(User user);
-    Optional<Token> findByToken(String token);
+    Optional<Token> findByRefreshToken(String refreshToken);
     void deleteByUser(User user);
 }

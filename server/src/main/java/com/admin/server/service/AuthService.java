@@ -88,34 +88,36 @@ public class AuthService {
     }
 
     // refresh regenerating token
-    public AuthResponse refresh(String token,HttpServletResponse response){
-        if(token==null || token.isEmpty()){
+    public AuthResponse refresh(String refreshToken,HttpServletResponse response){
+        if(refreshToken==null || refreshToken.isEmpty()){
             throw new RuntimeException("Token is missing");
         }
         //token mavjudligi
-        if(!jwtUtil.validateToken(token)){
+        if(!jwtUtil.validateToken(refreshToken)){
             throw new RuntimeException("Invalid token");
         }
-        String email;
+        String username;
         try {// tokendan emailni ajratib userni haqiqiy 
-            email=jwtUtil.extractEmail(token);//ekanligini
+            username=jwtUtil.extractUsername(refreshToken);//ekanligini
         } catch (Exception e) {//tekshirish
             throw new RuntimeException("Could not extract email from token");
         }
-        User user=authRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
+
+        User user=authRepository.findByUsername(username).orElseThrow(()->new RuntimeException("User not found"));
 
         Token savedToken=refreshTokenRepository.findByUser(user)
         .orElseThrow(()->new RuntimeException("Token not found"));
 
-        if(!savedToken.getRefreshToken().equals(token)){//token qiymatlari tengligini tekshirish
+        if(!savedToken.getRefreshToken().equals(refreshToken)){//token qiymatlari tengligini tekshirish
             throw new RuntimeException("Token mismatch!");
         }
-        if(savedToken.getExpiryDate().before(new java.util.Date())){
-            throw new RuntimeException("Token expired");// muddatini solishtirish
-        }
+
+
         String newAccessToken=jwtUtil.generateToken(user, accessTime);
         String newRefreshToken=jwtUtil.generateToken(user, refreshTime);
+
         savedToken.setRefreshToken(newRefreshToken);
+        savedToken.setExpiryDate(new Date(refreshTime));
         refreshTokenRepository.save(savedToken);
 
         ResponseCookie responseCookie=ResponseCookie.from("refreshToken", newRefreshToken)
@@ -128,8 +130,8 @@ public class AuthService {
         return new AuthResponse(user.getId(), user.getUsername(), user.getEmail(), newAccessToken, newRefreshToken);
     }
     // user  logout
-    public void userSignOut(String token){
-        Token token2=refreshTokenRepository.findByToken(token).orElseThrow(()->new RuntimeException("Invalid token"));
-        refreshTokenRepository.delete(token2);
+    public void userSignOut(String refreshToken){
+        Token token=refreshTokenRepository.findByRefreshToken(refreshToken).orElseThrow(()->new RuntimeException("Invalid token"));
+        refreshTokenRepository.delete(token);
     }
 }

@@ -19,7 +19,7 @@ import io.jsonwebtoken.security.Keys;
 public class JWTUtil {
     private static final String secret=Base64.getEncoder().encodeToString("uzbekistanEpisode1234567890abcdef1234567890".getBytes(StandardCharsets.UTF_8));
     private static final long accessTime=15*60*1000;
-    private static final long refreshTime=24*60*60*1000;
+    private static final long refreshTime=7*24*60*60*1000;
 
     public Key getSigningKey(){
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
