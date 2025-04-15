@@ -39,7 +39,7 @@ import { ThemeContext } from "../contexts/ThemeProvider";
   
     return (
       <>
-        <div className="flex">
+        <div className={`flex ${theme==="light"? "bg-gray-900 text-white":"bg-white text-gray-900"}`}>
           {/* Overlay */}
           {isOpen && (
             <div

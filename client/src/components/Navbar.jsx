@@ -1,9 +1,25 @@
 import { Bell, Menu, Moon, Settings, Sun, User } from 'lucide-react'
 import { useContext, useState } from 'react'
 import { ThemeContext } from '../contexts/ThemeProvider'
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axiosAPI from '../api/axiosAPI';
 const Navbar = ({onMenuClick}) => {
   const {theme,toggleTheme}=useContext(ThemeContext);
   const [isOpen,setIsOpen]=useState(false);
+  const navigate=useNavigate();
+
+  const handleSubmit= async ()=>{
+    try {
+      await axiosAPI.post("/auth/logout");
+      toast.success("Successfully logged out");
+      localStorage.removeItem("accessToken");
+      navigate("/auth");
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  }
   return (
     <>
    <div className={`fixed top-0 left-0 w-full flex items-center justify-between z-10 px-6 py-4 ${theme==="light"? "bg-gray-900 text-white":"bg-white text-gray-900"}  border-b-2 border-gray-500`}>
@@ -20,7 +36,8 @@ const Navbar = ({onMenuClick}) => {
               {isOpen===true && (
                 <div className={`fixed right-1 space-y-2 top-12 p-3 rounded-xl border border-gray-400 ${theme==="light"? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"} `}>
                   <p className={`cursor-pointer ${theme==="light"?" hover:bg-gray-700 text-white transition " : "hover:bg-gray-300 text-gray-800 transition"}  rounded  px-2`}>Username</p>
-                  <p className={`cursor-pointer ${theme==="light"?" hover:bg-gray-700 text-white transition " : "hover:bg-gray-300 text-gray-800 transition"}  rounded  px-2`}>Sign Out</p>
+                  <p className={`cursor-pointer ${theme==="light"?" hover:bg-gray-700 text-white transition " : "hover:bg-gray-300 text-gray-800 transition"}  rounded  px-2`} 
+                  onClick={handleSubmit}>Sign Out</p>
                 </div>
               ) }
             <Menu className={`cursor-pointer block md:hidden ${theme==="light"? "text-gray-300 hover:text-white transition" : "text-gray-700 hover:text-gray-900 transition"} transition`}

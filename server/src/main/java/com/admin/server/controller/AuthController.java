@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,7 +42,8 @@ public class AuthController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseEntity<String> userSignOut(@CookieValue(value = "refreshToken",required = false) String refreshToken){
+    public ResponseEntity<String> userSignOut(@RequestHeader("Authorization") String authorization){
+        String refreshToken=authorization.substring(7);
         authService.userSignOut(refreshToken);
         return ResponseEntity.ok("User logged out");
     }

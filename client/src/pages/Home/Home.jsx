@@ -32,10 +32,10 @@ const Home = () => {
               <h2>reports</h2>
             </div>
           </div>
-          <div className="lg:ml-64 mt-16 normalize">
+          <div className={`lg:ml-64 mt-16 normalize ${theme==="light"?"bg-gray-900 text-white":"bg-white text-gray-900"}`}>
             <CartItem/>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:ml-64">
+          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 lg:ml-64 ${theme==="light"?"bg-gray-900 text-white":"bg-white text-gray-900"}`}>
             <div className="w-full">
               <LineCharts/>
             </div>

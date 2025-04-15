@@ -1,9 +1,15 @@
 // HomePage.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Auth = () => {
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    if(localStorage.getItem("accessToken")){
+      navigate("/");
+    }
+  },[navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white">

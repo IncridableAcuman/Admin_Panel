@@ -1,7 +1,44 @@
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
+import {useNavigate } from 'react-router-dom'
+import axiosAPI from '../../api/axiosAPI';
+import {toast} from 'react-toastify'
 const Login = () => {
+  const navigate=useNavigate();
   const [isLogin,setIsLogin]=useState("Sign In");
+  const [username,setUsername]=useState("");
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+
+  const handleSubmit=async (e)=>{
+    e.preventDefault();
+    if(isLogin==="Sign Up"){
+      try {
+        const {data}=await axiosAPI.post("/auth/register",{username,email,password});
+        localStorage.setItem("accessToken",data.accessToken);
+        toast.success("Successfully Sign Up");
+        navigate("/");
+      } catch (error) {
+        toast.error("Something went wrong");
+        console.log(error);
+      }
+    } else{
+      try {
+        const {data}=await axiosAPI.post("/auth/login",{email,password});
+        localStorage.setItem("accessToken",data.accessToken);
+        toast.success("Successfully Sign In");
+        navigate("/")
+      } catch (error) {
+        toast.error("Something went wrong");
+        console.log(error);
+      }
+    }
+  }
+
+  useEffect(()=>{
+    if(localStorage.getItem('accessToken')){
+      navigate("/auth");
+    }
+  },[navigate])
   return (
     <>
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -9,7 +46,7 @@ const Login = () => {
         {/* Left Section: Form */}
         <div className="w-full md:w-1/2 p-6 md:p-8">
           <h2 className="text-2xl font-bold mb-6 text-center md:text-left">Get Started Now</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             {isLogin==="Sign Up"? (
               <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
@@ -20,6 +57,8 @@ const Login = () => {
                 id="name"
                 placeholder="Enter your name"
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={username}
+                onChange={(e)=>setUsername(e.target.value)}
               />
             </div>
             ) :<></>}        
@@ -32,6 +71,8 @@ const Login = () => {
                 id="email"
                 placeholder="Enter your email"
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
               />
             </div>
             <div className="mb-4">
@@ -43,6 +84,8 @@ const Login = () => {
                 id="password"
                 placeholder="Password"
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={password}
+                onChange={(e)=>setPassword(e.target.value)}
               />
             </div>
             <div className="mb-6">
